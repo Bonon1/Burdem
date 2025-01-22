@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Diagnosis Practice</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@flaticon/flaticon@1.0.0/css/all.min.css">
+    <style>
+        /* Dark Theme */
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .navbar {
+            background-color: #1f1f1f;
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: #e0e0e0 !important;
+        }
+
+        .navbar-brand:hover,
+        .nav-link:hover {
+            color: #bb86fc !important;
+        }
+
+        #loading {
+            background-color: rgba(18, 18, 18, 0.9);
+            color: #e0e0e0;
+            display: none;
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        #loading-spinner {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #bb86fc;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin: 0 auto;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        h1 {
+            color: #bb86fc;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 10px;
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            color: #bb86fc;
+        }
+
+        .card-text {
+            color: #e0e0e0;
+        }
+
+        .list-group-item {
+            background-color: #333;
+            border: 1px solid #444;
+            color: #e0e0e0;
+        }
+
+        .list-group-item:hover {
+            background-color: #bb86fc;
+            color: #121212;
+        }
+
+        .btn-diagnosis {
+            background-color: transparent;
+            border: none;
+            color: #bb86fc;
+            font-weight: bold;
+        }
+
+        .btn-diagnosis:hover {
+            color: #e0e0e0;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: transparent;
+            border: none;
+            color: #e0e0e0;
+            padding: 0;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        /* Modal Styles */
+        .modal-backdrop.show {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .modal-content {
+            background-color: #1f1f1f;
+            border: none;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-body {
+            text-align: center;
+        }
+
+        .glow {
+            text-shadow: 0 0 10px #bb86fc, 0 0 20px #bb86fc, 0 0 30px #bb86fc, 0 0 40px #bb86fc;
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#">Medical Practice</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/diagnosis">Diagnosis</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/progress_page">Progress</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/settings">Settings</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="loading">
+        <div id="loading-spinner"></div>
+        <div id="loading-text">Loading...</div>
+        <div id="medical-code" style="font-size: 18px; margin-top: 20px;"></div>
+    </div>
+
+    <div class="container">
+        <h1>Medical Diagnosis Practice</h1>
+        <div id="diagnosis-container">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="flaticon-user icon"></i>Patient Details</h2>
+                    <pre id="patient-details" class="card-text"></pre>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="flaticon-symptom icon"></i>Present Symptoms</h2>
+                    <pre id="present-symptoms" class="card-text"></pre>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="flaticon-exam icon"></i>Physical Exam</h2>
+                    <pre id="physical-exam" class="card-text"></pre>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="flaticon-lab icon"></i>Lab Results</h2>
+                    <pre id="lab-results" class="card-text"></pre>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="flaticon-imaging icon"></i>Imaging</h2>
+                    <pre id="imaging" class="card-text"></pre>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="card-title"><i class="flaticon-diagnosis icon"></i>Diagnosis Options</h2>
+                    <div id="diagnosis-options" class="list-group"></div>
+                </div>
+            </div>
+            <div class="success-message">Congratulations! You've chosen the correct diagnosis!</div>
+            <div class="next-level">
+                <button id="next-level-btn" class="btn btn-primary">Next Level</button>
+            </div>
+            <div class="error-message" id="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Congratulations Modal -->
+    <div class="modal fade" id="congratulationsModal" tabindex="-1" role="dialog" aria-labelledby="congratulationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <p class="glow">Correct</p>
+                    <button type="button" class="btn btn-primary mt-3" id="modal-explanation-btn">Explanation</button>
+                    <button type="button" class="btn btn-primary mt-3" id="modal-ok-btn">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Incorrect Modal -->
+    <div class="modal fade" id="incorrectModal" tabindex="-1" role="dialog" aria-labelledby="incorrectModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <p class="glow text-danger">Incorrect</p> <!-- "Incorrect" message with red styling -->
+                    <button type="button" class="btn btn-primary mt-3" id="incorrect-explanation-btn">Explanation</button>
+                    <button type="button" class="btn btn-primary mt-3" id="incorrect-ok-btn">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Explanation Modal -->
+    <div class="modal fade" id="explanationModal" tabindex="-1" role="dialog" aria-labelledby="explanationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="explanationModalLabel">Explanation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="explanation-text"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            let correctAnswers = 0;
+            let isLoading = false;
+            let explanationText = ''; // Variable to store the explanation
+
+            function fetchDiagnosis() {
+                if (isLoading) return;
+                isLoading = true;
+
+                $('#loading').show();
+                $('#error-message').hide(); // Hide error message
+                $('.success-message, .next-level').hide(); // Hide success message and next level button initially
+
+                $.getJSON('/generate', function(data) {
+                    if (data.error) {
+                        $('#loading').hide();
+                        $('#error-message').text('Error fetching diagnosis. Please try again later.').show();
+                        setTimeout(fetchDiagnosis, 3000);
+                    } else {
+                        $('#loading').hide();
+                        $('#patient-details').text(data['Patient Details']);
+                        $('#present-symptoms').text(data['Present Symptoms']);
+                        $('#physical-exam').text(data['Physical Exam']);
+                        $('#lab-results').text(data['Lab Results']);
+                        $('#imaging').text(data['Imaging']);
+                        $('#medical-code').text(data.medical_code);
+
+                        explanationText = data.explanation; // Store the explanation
+
+                        let optionsHtml = '';
+                        data.options.forEach(function(option) {
+                            optionsHtml += `<button class="list-group-item list-group-item-action btn-diagnosis">${option}</button>`;
+                        });
+                        $('#diagnosis-options').html(optionsHtml);
+
+                        $('.list-group-item-action').click(function() {
+                            if ($(this).text() === data.correct_answer) {
+                                $('#congratulationsModal').modal('show'); // Show congratulatory modal
+                                correctAnswers++;
+
+                                // Handle modal OK button click
+                                $('#modal-ok-btn').off('click').on('click', function() {
+                                    $('#congratulationsModal').modal('hide'); // Hide modal
+                                    $('.success-message, .next-level').hide(); // Hide the message and button
+                                    $.post('/solved', function() {
+                                        isLoading = false;
+                                        fetchDiagnosis(); // Fetch next diagnosis after solving the current one
+                                    });
+                                });
+
+                                // Handle Explanation button click
+                                $('#modal-explanation-btn').off('click').on('click', function() {
+                                    $('#congratulationsModal').modal('hide'); // Hide congrats modal
+                                    $('#explanation-text').text(explanationText); // Set explanation text
+                                    $('#explanationModal').modal('show'); // Show explanation modal
+                                });
+                            } else {
+                                
+                                $('#incorrectModal').modal('show'); // Show incorrect modal
+
+                                // Handle Explanation button click for Incorrect modal
+                                $('#incorrect-explanation-btn').off('click').on('click', function() {
+                                    $('#incorrectModal').modal('hide'); // Hide incorrect modal
+                                    $('#explanation-text').text(explanationText); // Set explanation text
+                                    $('#explanationModal').modal('show'); // Show explanation modal
+                                });
+
+                                // Handle OK button click for Incorrect modal to move to the next level
+                                $('#incorrect-ok-btn').off('click').on('click', function() {
+                                    $('#incorrectModal').modal('hide'); // Hide incorrect modal
+                                    $('.success-message, .next-level').hide(); // Hide the message and button
+                                    $.post('/solved', function() {
+                                        isLoading = false;
+                                        fetchDiagnosis(); // Fetch next diagnosis after solving the current one
+                                    });
+                                });
+                            }
+                        });
+                    }
+                    isLoading = false;
+                }).fail(function() {
+                    $('#loading').hide();
+                    $('#error-message').text('Error occurred while fetching diagnosis. Please try again later.').show();
+                    setTimeout(fetchDiagnosis, 3000);
+                    isLoading = false;
+                });
+            }
+
+            fetchDiagnosis();
+        });
+    </script>
+</body>
+
+</html>
