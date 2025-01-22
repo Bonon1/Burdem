@@ -477,7 +477,7 @@ def generate_diagnosis():
     chat_session = model.start_chat(history=[])
     response = chat_session.send_message(medical_prompt)
     diagnosis_text = response.text.replace('*', '')  # Remove "*" symbols from generated text
-    print(response)
+    
     # Extract sections using regex
     sections = {
         "Patient Details": format_section(extract_section(diagnosis_text, "Patient Details")),
@@ -494,7 +494,7 @@ def generate_diagnosis():
         "correct": extract_section(diagnosis_text, "Why the Correct Diagnosis is Correct"),
         "other": extract_section(diagnosis_text, "Why the Other Diagnoses are Less Likely"),
     }
-    print(explanations)
+    
 
     # Shuffle options to randomize correct answer position
     random.shuffle(options)
